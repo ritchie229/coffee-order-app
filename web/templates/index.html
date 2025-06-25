@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Кофейня Онлайн</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>☕ Добро пожаловать в нашу онлайн-кофейню!</h1>
+
+        <form method="POST" action="/order" class="order-form">
+            <input type="text" name="name" placeholder="Имя" required>
+            <input type="text" name="second_name" placeholder="Фамилия" required>
+
+            <label for="coffee">Выберите кофе:</label>
+            <select name="coffee" id="coffee">
+                {% for coffee in coffees %}
+                    <option value="{{ coffee[0] }}">{{ coffee[1] }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Заказать</button>
+        </form>
+
+        <form method="GET" action="/report" class="report-form">
+            <button type="submit">📋 Отчет за сегодня</button>
+        </form>
+
+        <div class="gallery">
+            <img src="{{ url_for('static', filename='img/latte.jpg') }}" alt="Latte">
+            <img src="{{ url_for('static', filename='img/espresso.jpg') }}" alt="Espresso">
+            <img src="{{ url_for('static', filename='img/mocachino.jpg') }}" alt="Mocachino">
+        </div>
+    </div>
+</body>
+</html>

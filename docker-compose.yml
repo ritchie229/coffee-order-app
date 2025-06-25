@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    image: "mariadb:latest"
+    pull_policy: build
+    container_name: mariadb
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init_db:/docker-entrypoint-initdb.d
+    networks:
+      - app-net
+
+  web:
+    build: ./web
+    container_name: webapp
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - .env
+    networks:
+      - app-net
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: nginx:latest
+    pull_policy: build
+    container_name: nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - web
+    networks:
+      - app-net
+
+volumes:
+  db_data:
+
+networks:
+  app-net:
