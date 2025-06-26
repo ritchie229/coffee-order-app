@@ -1,108 +1,107 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Кофе-заказ</title>
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(to bottom, #fff9f2, #fce5cd);
-            padding: 2rem;
-        }
-        h1 {
-            color: #6f4e37;
-        }
-        form {
-            background: #ffffffdd;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            max-width: 500px;
-        }
-        input, select {
-            padding: 0.6rem;
-            margin: 0.5rem 0;
-            width: 100%;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-        button {
-            background-color: #6f4e37;
-            color: white;
-            border: none;
-            padding: 0.8rem;
-            border-radius: 10px;
-            width: 100%;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        #waiting, #ready {
-            display: none;
-            margin-top: 2rem;
-            text-align: center;
-            animation: fadeIn 1s ease-in;
-        }
-        #ready img {
-            width: 150px;
-            margin-bottom: 1rem;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Кофейные заказы</title>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background-color: #f2f2f2;
+    }
+    h1 {
+      color: #6b4f3b;
+    }
+    form {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label, select, input {
+      display: block;
+      margin-bottom: 1rem;
+    }
+    button {
+      background-color: #6b4f3b;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .message {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      color: #333;
+    }
+    .coffee-ready {
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: green;
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+  </style>
 </head>
 <body>
+  <h1>☕ Заказ кофе</h1>
 
-<h1>Сделать заказ кофе</h1>
-
-<form id="order-form" action="/order" method="post" onsubmit="showWaiting()">
-    <input type="text" name="name" placeholder="Имя" required>
-    <input type="text" name="second_name" placeholder="Фамилия" required>
-    <select name="coffee" required>
+  <form id="orderForm">
+    <label>Имя:
+      <input type="text" name="name" required>
+    </label>
+    <label>Фамилия:
+      <input type="text" name="second_name" required>
+    </label>
+    <label>Выберите кофе:
+      <select name="coffee" required>
         {% for coffee in coffees %}
-            <option value="{{ coffee[0] }}">{{ coffee[1] }}</option>
+          <option value="{{ coffee[0] }}">{{ coffee[1] }}</option>
         {% endfor %}
-    </select>
+      </select>
+    </label>
     <button type="submit">Заказать</button>
-</form>
+  </form>
 
-<form action="/report" method="get" style="margin-top: 1rem;">
-    <button type="submit">Отчёт на сегодня</button>
-</form>
+  <div class="message" id="messageBox"></div>
 
-<!-- Уведомление: кофе готовится -->
-<div id="waiting">
-    <h2>⏳ Ваш кофе готовится... Подождите 1 минуту.</h2>
-</div>
-
-<!-- Уведомление: кофе готов -->
-<div id="ready">
-    <img src="https://media.giphy.com/media/3oKIPsx2VAYAgEHC12/giphy.gif" alt="Coffee ready">
-    <h2>☕ Заберите ваш кофе!</h2>
-</div>
-
-<!-- Socket.IO -->
-<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"
-        integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI"
-        crossorigin="anonymous"></script>
-
-<script>
+  <script>
     const socket = io();
+    const form = document.getElementById('orderForm');
+    const messageBox = document.getElementById('messageBox');
 
-    socket.on("coffee_ready", (data) => {
-        document.getElementById("waiting").style.display = "none";
-        const readyDiv = document.getElementById("ready");
-        readyDiv.querySelector("h2").innerText = `☕ ${data.message}`;
-        readyDiv.style.display = "block";
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = new URLSearchParams(formData);
+
+      // Отправка формы через fetch
+      const res = await fetch("/order", {
+        method: "POST",
+        body: data,
+      });
+
+      const html = await res.text();
+
+      // Показываем временное сообщение
+      messageBox.innerHTML = "⏳ Ваш кофе готовится...";
+      messageBox.className = "message";
+
+      // Через минуту прилетит WebSocket-сообщение
     });
 
-    function showWaiting() {
-        document.getElementById("waiting").style.display = "block";
-        document.getElementById("ready").style.display = "none";
-    }
-</script>
-
+    // Обработка WebSocket-сообщения
+    socket.on('coffee_ready', (data) => {
+      messageBox.innerHTML = `✅ ${data.message} ☕`;
+      messageBox.className = "message coffee-ready";
+    });
+  </script>
 </body>
 </html>
