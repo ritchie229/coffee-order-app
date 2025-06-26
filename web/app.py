@@ -1,11 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
-import mariadb
-import os
-import threading
-import time
+from flask import Flask, render_template, request
+from flask_socketio import SocketIO, emit
+import mariadb, os, threading, time
 from datetime import datetime
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 def get_db_connection():
     return mariadb.connect(
@@ -16,7 +15,7 @@ def get_db_connection():
         database=os.getenv("MYSQL_DATABASE")
     )
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def index():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -41,12 +40,15 @@ def order():
     conn.commit()
     conn.close()
 
-    threading.Thread(target=delayed_message, args=(name, second_name, coffee_name)).start()
+    # отправим оповещение через WebSocket
+    socketio.start_background_task(delayed_message, name, second_name, coffee_name)
+
     return f"<h2>Уважаемый {name} {second_name}, ваш кофе {coffee_name} будет готов через 1 минуту.</h2>"
 
 def delayed_message(name, second_name, coffee_name):
     time.sleep(60)
-    print(f"Заберите ваш кофе {coffee_name}, {name} {second_name}")
+    message = f"Заберите ваш кофе {coffee_name}, {name} {second_name}"
+    socketio.emit('coffee_ready', {'message': message})
 
 @app.route("/report")
 def report():
@@ -65,4 +67,4 @@ def report():
     return f"<h2>Заказы на {today}:</h2>" + "<br>".join([f"{n} {s} — {coffee}" for n, s, coffee in orders])
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    socketio.run(app, host="0.0.0.0", port=5000)

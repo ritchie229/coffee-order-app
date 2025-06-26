@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   db:
     build:
       context: ./db
       dockerfile: Dockerfile
-    image: "mariadb:latest"
+    image: mariadb:latest
     pull_policy: build
     container_name: mariadb
     restart: always
@@ -18,7 +16,11 @@ services:
       - app-net
 
   web:
-    build: ./web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    image: python:3.11-slim
+    pull_policy: build
     container_name: webapp
     restart: always
     depends_on:

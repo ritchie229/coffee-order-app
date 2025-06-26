@@ -10,6 +10,6 @@ RUN apt-get update && apt-get install -y \
 
 COPY . .
 
-RUN pip install --no-cache-dir flask mariadb
+RUN pip install --no-cache-dir flask mariadb flask-socketio eventlet
 
 CMD ["python", "app.py"]
