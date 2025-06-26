@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile
     image: python:3.11-slim
     pull_policy: build
-#    container_name: webapp
+    container_name: web
     restart: always
     depends_on:
       - db
