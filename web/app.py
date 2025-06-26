@@ -10,7 +10,7 @@ def get_db_connection():
     return mariadb.connect(
         user=os.getenv("MYSQL_USER"),
         password=os.getenv("MYSQL_PASSWORD"),
-        host=os.getenv("MYSQL_HOST", "db"),  # значение по умолчанию = db
+        host=os.getenv("SHIPYARD_DOMAIN_DB", "db"),  # значение по умолчанию = db
         port=3306,
         database=os.getenv("MYSQL_DATABASE")
     )
