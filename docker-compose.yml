@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: mariadb:latest
     pull_policy: build
-    container_name: mariadb
+#    container_name: mariadb
     restart: always
     env_file:
       - .env
@@ -21,7 +21,7 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile
-    container_name: web
+#    container_name: web
     restart: always
     depends_on:
       - db
@@ -42,7 +42,7 @@ services:
       dockerfile: Dockerfile
     image: nginx:latest
     pull_policy: build
-    container_name: nginx
+#    container_name: nginx
     ports:
       - "8080:80"
     depends_on:
@@ -53,12 +53,12 @@ services:
       - app-net
     labels:
       shipyard.route: "/"
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost/"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 20s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 volumes:
   db_data:

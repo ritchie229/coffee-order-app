@@ -10,7 +10,7 @@ def get_db_connection():
     return mariadb.connect(
         user=os.getenv("MYSQL_USER"),
         password=os.getenv("MYSQL_PASSWORD"),
-        host="db",
+        host=os.getenv("MYSQL_HOST", "db"),  # значение по умолчанию = db
         port=3306,
         database=os.getenv("MYSQL_DATABASE")
     )
@@ -46,7 +46,7 @@ def order():
     return f"<h2>Уважаемый {name} {second_name}, ваш кофе {coffee_name} будет готов через 1 минуту.</h2>"
 
 def delayed_message(name, second_name, coffee_name):
-    time.sleep(60)
+    time.sleep(10)
     message = f"Заберите ваш кофе {coffee_name}, {name} {second_name}"
     socketio.emit('coffee_ready', {'message': message})
 
