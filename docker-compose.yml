@@ -32,7 +32,7 @@ services:
     networks:
       - app-net
 
- nginx:
+  nginx:
     build:
       context: ./nginx
       dockerfile: Dockerfile
