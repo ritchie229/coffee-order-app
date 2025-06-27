@@ -13,7 +13,9 @@ services:
       - db_data:/var/lib/mysql
       - ./init_db:/docker-entrypoint-initdb.d
     networks:
-      - app-net
+      app-net:
+        aliases:
+          - db.local
 
   web:
     build:
@@ -25,6 +27,8 @@ services:
       - db
     env_file:
       - .env
+    environment:
+      MYSQL_HOST: db.local
     ports:
       - "5000:5000"
     networks:
