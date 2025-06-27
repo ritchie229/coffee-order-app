@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: mariadb:latest
     pull_policy: build
-#    container_name: mariadb
+    container_name: db
     restart: always
     env_file:
       - .env

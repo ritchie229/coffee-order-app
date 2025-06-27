@@ -7,15 +7,13 @@ app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 def get_db_connection():
-    host = (
-        os.getenv("MYSQL_HOST") or
-        os.getenv("SHIPYARD_DOMAIN_DB") or
-        "db"  # локальное имя сервиса базы данных
-    )
+    host = os.getenv("MYSQL_HOST")
+    if not host or host == os.getenv("SHIPYARD_DOMAIN_DB"):
+        host = "db"  # дефолт для internal docker bridge
     return mariadb.connect(
         user=os.getenv("MYSQL_USER"),
         password=os.getenv("MYSQL_PASSWORD"),
-        host=host,  #host=os.getenv("MYSQL_HOST", "db") # host=os.getenv("SHIPYARD_DOMAIN_DB", "db"),  # значение по умолчанию = db
+        host=host,
         port=3306,
         database=os.getenv("MYSQL_DATABASE")
     )
