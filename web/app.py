@@ -7,10 +7,15 @@ app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 def get_db_connection():
+    host = (
+        os.getenv("MYSQL_HOST") or
+        os.getenv("SHIPYARD_DOMAIN_DB") or
+        "db"  # локальное имя сервиса базы данных
+    )
     return mariadb.connect(
         user=os.getenv("MYSQL_USER"),
         password=os.getenv("MYSQL_PASSWORD"),
-        host=os.getenv("MYSQL_HOST", "db") # host=os.getenv("SHIPYARD_DOMAIN_DB", "db"),  # значение по умолчанию = db
+        host=host,  #host=os.getenv("MYSQL_HOST", "db") # host=os.getenv("SHIPYARD_DOMAIN_DB", "db"),  # значение по умолчанию = db
         port=3306,
         database=os.getenv("MYSQL_DATABASE")
     )
