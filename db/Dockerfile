@@ -1,1 +1,1 @@
-FROM mariadb:latest
+FROM mariadb:11.8.2-noble
