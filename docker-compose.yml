@@ -1,17 +1,12 @@
 services:
   db:
-    build:
-      context: ./db
-      dockerfile: Dockerfile
-    image: mariadb:latest
-    pull_policy: build
-    container_name: db
+    image: mariadb:11.8.2-noble
     restart: always
     env_file:
       - .env
     volumes:
       - db_data:/var/lib/mysql
-      - ./init_db:/docker-entrypoint-initdb.d
+      - ./init_db:/docker-entrypoint-initdb.d:ro
     networks:
       app-net:
         aliases:
@@ -20,48 +15,38 @@ services:
   web:
     build:
       context: ./web
-      dockerfile: Dockerfile
-#    container_name: web
+    pull_policy: build
     restart: always
-    depends_on:
-      db:
-        condition: service_started
     env_file:
       - .env
     environment:
       MYSQL_HOST: db.local
-    ports:
-      - "5000:5000"
     networks:
       - app-net
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]  # Adjust the port/path as needed
-#    image: python:3.11-slim
-    pull_policy: build
+    depends_on:
+      db:
+        condition: service_started
 
   nginx:
     build:
       context: ./nginx
-      dockerfile: Dockerfile
-    image: nginx:latest
     pull_policy: build
-#    container_name: nginx
-    ports:
-      - "8080:80"
-    depends_on:
-      - web
-#        condition: service_healthy
-    restart: on-failure
-    networks:
-      - app-net
-    labels:
-      shipyard.route: "/"
+    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
+    ports:
+      - "8080:80"
+    networks:
+      - app-net
+    labels:
+      shipyard.route: "/"
+    depends_on:
+      web:
+        condition: service_started
 
 volumes:
   db_data:
