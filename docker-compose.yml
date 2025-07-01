@@ -35,23 +35,21 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     pull_policy: build
-#    container_name: nginx
-    ports:
-      - "8080:80"
-    depends_on:
-      - web
-#        condition: service_healthy
-    restart: on-failure
-    networks:
-      - app-net
-    labels:
-      shipyard.route: "/"
+    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
+    ports:
+      - "8080:80"
+    networks:
+      - app-net
+    labels:
+      shipyard.route: "/"
+    depends_on:
+      - web
 
 volumes:
   db_data:
