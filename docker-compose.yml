@@ -6,7 +6,7 @@ services:
       - .env
     volumes:
       - db_data:/var/lib/mysql
-      - ./init_db:/docker-entrypoint-initdb.d
+      - ./init_db:/docker-entrypoint-initdb.d:ro
     networks:
       app-net:
         aliases:
