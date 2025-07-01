@@ -16,11 +16,8 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile
-#    container_name: web
+    pull_policy: build
     restart: always
-    depends_on:
-      db:
-        condition: service_started
     env_file:
       - .env
     environment:
@@ -29,10 +26,9 @@ services:
       - "5000:5000"
     networks:
       - app-net
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]  # Adjust the port/path as needed
-#    image: python:3.11-slim
-    pull_policy: build
+    depends_on:
+      db:
+        condition: service_started
 
   nginx:
     build:
