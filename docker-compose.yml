@@ -1,11 +1,6 @@
 services:
   db:
-    build:
-      context: ./db
-      dockerfile: Dockerfile
-    image: mariadb:latest
-    pull_policy: build
-    container_name: db
+    image: mariadb:11.8.2-noble
     restart: always
     env_file:
       - .env
