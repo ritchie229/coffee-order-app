@@ -8,7 +8,7 @@ services:
       - db_data:/var/lib/mysql
       - ./init_db:/docker-entrypoint-initdb.d:ro
     networks:
-      app-net:
+      internal:
         aliases:
           - db.local
 
@@ -22,7 +22,7 @@ services:
     environment:
       MYSQL_HOST: db.local
     networks:
-      - app-net
+      - internal
     depends_on:
       db:
         condition: service_started
@@ -41,7 +41,7 @@ services:
     ports:
       - "8080:80"
     networks:
-      - app-net
+      - internal
     labels:
       shipyard.route: "/"
     depends_on:
@@ -52,4 +52,4 @@ volumes:
   db_data:
 
 networks:
-  app-net:
+  internal:
