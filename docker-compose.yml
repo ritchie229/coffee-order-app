@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:11.8.2-noble
+    image: mysql:8.0   #mariadb:11.8.2-noble
     restart: always
     env_file:
       - .env
@@ -20,7 +20,8 @@ services:
     env_file:
       - .env
     environment:
-      MYSQL_HOST: db.local
+      DB_HOST: db.local
+ #     MYSQL_HOST: db.local
     networks:
       - app-net
     depends_on:

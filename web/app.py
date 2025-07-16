@@ -6,7 +6,9 @@ from datetime import datetime
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
-def get_db_connection():
+'''
+
+/* def get_db_connection():
     host = os.getenv("MYSQL_HOST")
     if not host or host == os.getenv("SHIPYARD_DOMAIN_DB"):
         host = "db"  # дефолт для internal docker bridge
@@ -16,6 +18,16 @@ def get_db_connection():
         host=host,
         port=3306,
         database=os.getenv("MYSQL_DATABASE")
+    )
+
+'''
+def get_db_connection():
+    return mariadb.connect(
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host="db",
+        port=3306,
+        database=os.getenv("DB_NAME")
     )
 
 @app.route("/", methods=["GET"])
