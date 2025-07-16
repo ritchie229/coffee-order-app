@@ -1,6 +1,7 @@
 services:
   db:
-    image: mysql:8.0   #mariadb:11.8.2-noble
+    #image: mysql:8.0   
+    image: mariadb:11.8.2-noble
     restart: always
     env_file:
       - .env
