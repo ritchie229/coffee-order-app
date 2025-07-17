@@ -38,8 +38,8 @@ services:
  #     MYSQL_HOST: db.local
     networks:
       - app-net
-    labels: #added
-      shipyard.route: "/"
+ #   labels: #added #comment after same route on two srv msg
+ #     shipyard.route: "/"
     depends_on:
       db:
         condition: service_healthy #started
