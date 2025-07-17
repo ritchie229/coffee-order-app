@@ -12,6 +12,7 @@ COPY . .
 
 RUN pip install --no-cache-dir flask mariadb flask-socketio eventlet
 
+EXPOSE 5000
 #CMD ["sh", "-c", "echo 'Запуск пошёл'; python app.py"]
 CMD ["python", "app.py"]
 

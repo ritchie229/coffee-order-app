@@ -1,3 +1,14 @@
+-- Создаём пользователя с mysql_native_password
+ALTER USER 'coffee_user'@'%' IDENTIFIED WITH mysql_native_password BY 'coffee_pass';
+
+-- На всякий случай создаём пользователя, если его нет
+CREATE USER IF NOT EXISTS 'coffee_user'@'%' IDENTIFIED WITH mysql_native_password BY 'coffee_pass';
+
+-- Даём права
+GRANT ALL PRIVILEGES ON coffee_shop.* TO 'coffee_user'@'%';
+FLUSH PRIVILEGES;
+
+
 CREATE TABLE IF NOT EXISTS customers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50),

@@ -2,44 +2,64 @@ services:
   db:
     #image: mysql:8.0   
     image: mariadb:11.8.2-noble
+    expose: #added
+      - "3306"
+    container_name: db # added
     restart: always
     env_file:
       - .env
+    ports: # added
+      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./init_db:/docker-entrypoint-initdb.d:ro
+    healthcheck: # added
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       app-net:
-        aliases:
-          - db.local
+#        aliases:
+#          - db.local
 
   web:
     build:
       context: ./web
+    container_name: web
+    ports:  #added
+      - "5000:5000"
     pull_policy: build
     restart: always
     env_file:
       - .env
     environment:
-      DB_HOST: db.local
+      DB_HOST: db #db.local
  #     MYSQL_HOST: db.local
     networks:
       - app-net
+    labels: #added
+      shipyard.route: "/"
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy #started
+    healthcheck: #added
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   nginx:
     build:
       context: ./nginx
     pull_policy: build
     restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost/"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 20s
     ports:
       - "8080:80"
     networks:
