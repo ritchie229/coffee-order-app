@@ -10,10 +10,16 @@ RUN apt-get update && apt-get install -y \
 
 COPY . .
 
-RUN pip install --no-cache-dir flask mariadb flask-socketio eventlet
+RUN pip install --no-cache-dir flask mariadb flask-socketio eventlet litestar uvicorn 
+
+RUN chmod +x start.sh
 
 EXPOSE 5000
+EXPOSE 9100
+
 #CMD ["sh", "-c", "echo 'Запуск пошёл'; python app.py"]
-CMD ["python", "app.py"]
+#CMD ["python", "app.py"]
+
+CMD ["./start.sh"]
 
 STOPSIGNAL SIGINT

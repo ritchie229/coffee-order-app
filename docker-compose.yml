@@ -29,6 +29,11 @@ services:
     container_name: web
     ports:  #added
       - "5000:5000"
+      - "9100:9100"
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
     pull_policy: build
     restart: always
     env_file:
@@ -42,7 +47,7 @@ services:
  #     shipyard.route: "/"
     depends_on:
       db:
-        condition: service_healthy #started
+        condition: service_started #service_healthy
     healthcheck: #added
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 10s
@@ -62,6 +67,11 @@ services:
 #      start_period: 20s
     ports:
       - "8080:80"
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+
     networks:
       - app-net
     labels:
