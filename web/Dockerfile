@@ -18,7 +18,11 @@ EXPOSE 5000
 EXPOSE 9100
 
 #CMD ["sh", "-c", "echo 'Запуск пошёл'; python app.py"]
-#CMD ["python", "app.py"]
+
+###EXAMPLES OF MULTISTART - NOT TESTED
+#CMD python app.py & ; ./node_exporter
+#ENTRYPOINT command && command_2 && another_command
+#CMD ["python", "app.py" , "&" ; "./node_exporter"]
 
 CMD ["./start.sh"]
 

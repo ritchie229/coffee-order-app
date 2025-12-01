@@ -58,11 +58,11 @@ def order():
     # отправим оповещение через WebSocket
     socketio.start_background_task(delayed_message, name, second_name, coffee_name)
 
-    return f"<h2>Уважаемый {name} {second_name}, ваш кофе {coffee_name} будет готов через 1 минуту.</h2>"
+    return f"<h2>Уважаемый {name} {second_name}, ваш {coffee_name} будет готов через 1 минуту.</h2>"
 
 def delayed_message(name, second_name, coffee_name):
     time.sleep(10)
-    message = f"Заберите ваш кофе {coffee_name}, {name} {second_name}"
+    message = f"Заберите ваш {coffee_name}, {name} {second_name}"
     socketio.emit('coffee_ready', {'message': message})
 
 @app.route("/report")
