@@ -29,7 +29,7 @@ services:
     container_name: web
     ports:  #added
       - "5000:5000"
-      - "9100:9100"
+      - "9101:9100"
     logging:
       driver: json-file
       options:
